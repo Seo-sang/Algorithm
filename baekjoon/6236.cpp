@@ -5,42 +5,41 @@ using namespace std;
 
 vector<int> arr;
 int N, M;
-int f(long long mid) {
-    int ret = 0;
-    long long now = 0;
-    for(int i = 0; i < N; i++) {
+int f(int mid) {
+    int rst = 1;
+    int now = mid;
+    for(int i = 0; i < arr.size(); i++) {
+        if(M - rst == arr.size() - i) {
+            return M;
+        }
         int e = arr[i];
-        if(e > mid) return M + 1;
-        if(e > now) {
-            now = mid;
-            ret++;
+        if(now < e) {
+            rst++;
+            now = mid - e;
         }
-        else if((M - ret) == (N - i)) {
-            now = mid;
-            ret++;
+        else {
+            now -= e;
         }
-        now -= e;
     }
-    
-    return ret;
+    return rst;
 }
 
 int main() {
     cin >> N >> M;
-    long long lo = 10000, hi = 0;
+    int l =0, r;
     for(int i = 0; i < N; i++) {
-        long long a; cin >> a;
+        int a; cin >> a;
+        l = max(l, a);
+        r += a;
         arr.push_back(a);
-        hi += a;
-        lo = min(lo, a);
     }
-    hi++;
+    r++;
 
     for(int i = 0; i < 40; i++) {
-        long long mid = (lo + hi) / 2;
-
-        if(f(mid) > M) lo = mid;
-        else hi = mid;
+        int mid = (l + r) / 2;
+        int rst = f(mid);
+        if(rst > M) l = mid;
+        else r = mid;
     }
-    cout << hi;
+    cout << r;
 }

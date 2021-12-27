@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -12,14 +13,13 @@ int main() {
         int a; cin >> a;
         arr.push_back(a);
     }
-    int ans = 2 * 1e9;
     sort(arr.begin(), arr.end());
-    for(int i = 0; i < N; i++) {
-        long long now = arr[i] + M;
-        if(now > arr.back()) break;
-        auto it = lower_bound(arr.begin(), arr.end(), now);
-        if(*it - arr[i] >= M) {
-            ans = min(ans, *it - arr[i]);
+    int ans = 2e9;
+    for(int i = 0; i < N-1; i++) {
+        int now = arr[i];
+        auto it = lower_bound(arr.begin(), arr.end(), now + M);
+        if(it != arr.end()) {
+            ans = min(ans, abs(*it - now));
         }
     }
     cout << ans;

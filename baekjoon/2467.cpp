@@ -9,37 +9,23 @@ vector<int> arr;
 
 int main() {
     int N; cin >> N;
+    int first, second;
     for(int i = 0; i < N; i++) {
         int a; cin >> a;
         arr.push_back(a);
     }
-    int i;
-    int mnum = 2 * 1e9 + 1;
-    int ans1, ans2;
-    for(i = 0; i < N - 1; i++) {
-        if(arr[i] >= 0) break;
-        int now = arr[i];
-        auto it = lower_bound(arr.begin(), arr.end(), -now);
-        if(it != arr.end()) {
-            if(abs(*it + now) < mnum) {
-                mnum = abs(*it + now);
-                ans1 = now, ans2 = *it;
-            }
+    sort(arr.begin(), arr.end());
+    int mnum = 2e9 + 1;
+    int l = 0, r = N-1;
+    while(l < r) {
+        if(abs(arr[r] + arr[l]) < mnum) {
+            mnum = abs(arr[r] + arr[l]);
+            first = arr[l];
+            second = arr[r];
         }
-        it--;
-        if(it - arr.begin() != i) {
-            if(abs(*it + now) < mnum) {
-                mnum = abs(*it + now);
-                ans1 = now, ans2 = *it;
-            }
-        }
-    }
-    if(i + 1 < N) {
-        if(arr[i] + arr[i+1] < mnum) {
-            ans1 = arr[i];
-            ans2 = arr[i+1];
-        }
+        if(abs(arr[l] + arr[r-1]) < abs(arr[l+1] + arr[r])) r--;
+        else l++;
     }
 
-    cout << ans1 << ' ' << ans2;
+    cout << first << ' ' << second;
 }

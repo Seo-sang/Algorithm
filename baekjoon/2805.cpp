@@ -2,33 +2,32 @@
 #include <vector>
 using namespace std;
 
+const int MN = 2e9;
+
 vector<int> arr;
 
-long long f(int a) {
-    long long ret = 0;
+long long f(int mid) {
+    long long rst = 0;
     for(int e : arr) {
-        ret += max(0, e - a);
+        if(e > mid) rst += (e - mid);
     }
-
-    return ret;
+    return rst;
 }
 
 int main() {
     int N, M; cin >> N >> M;
-    int mnum = 0;
+    int l = 0, r;
     for(int i = 0; i < N; i++) {
         int a; cin >> a;
+        r = max(r, a);
         arr.push_back(a);
-        mnum = max(mnum, a);
     }
-    long long left = 0, right = mnum + 1;
 
-    while(left + 1 < right) {
-        int mid = (left + right) / 2;
-        cout << left <<' '<<right << endl;
-        long long ret = f(mid);
-        if(ret >= M) left = mid;
-        else right = mid;
+    for(int i = 0; i < 40; i++) {
+        long long mid = (l + r) / 2;
+        long long tmp = f(mid);
+        if(M > tmp) r = mid;
+        else l = mid;
     }
-    cout << left;
+    cout << l;
 }

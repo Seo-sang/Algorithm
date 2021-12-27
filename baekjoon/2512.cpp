@@ -6,32 +6,31 @@ using namespace std;
 vector<int> arr;
 
 int f(int mid) {
-    int ret = 0;
+    int rst = 0;
     for(int e : arr) {
-        ret += min(e, mid);
+        rst += min(e, mid);
     }
 
-    return ret;
+    return rst;
 }
 
 int main() {
     int N; cin >> N;
-    int lo = 1, hi = 0;
+    int l, r = 0;
     for(int i = 0; i < N; i++) {
         int a; cin >> a;
+        r = max(r, a);
         arr.push_back(a);
-        hi = max(hi, a);
     }
-    hi++;
+    r++;
     int M; cin >> M;
-
+    l = 1;
     for(int i = 0; i < 40; i++) {
-        int mid = (lo + hi) / 2;
-
-        int ret = f(mid);
-        if(ret <= M) lo = mid;
-        else hi = mid;
+        int mid = (l + r) / 2;
+        int rst = f(mid);
+        if(rst <= M) l = mid;
+        else r = mid;
     }
 
-    cout << lo;
+    cout << l;
 }

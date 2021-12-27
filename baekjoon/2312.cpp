@@ -12,7 +12,8 @@ int main() {
                 cnt++;
                 N /= i;
             }
-            cout << i << ' ' << cnt << '\n';
+            if(cnt)
+                cout << i << ' ' << cnt << '\n';
         }
     }
 }
