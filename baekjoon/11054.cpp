@@ -41,16 +41,11 @@ int main() {
             *it = arr[i];
             dp2[i] = it - dp.begin();
         }
-        for(int e : dp) {
-            cout << e <<  ' ';
-        }
-        cout << endl;
     }
 
     int ans = 0;
     for(int i = 0; i < N; i++) {
         ans = max(ans, dp1[i] + dp2[i]);
-        cout << dp1[i] << ' ' << dp2[i] << endl;
     }
 
     cout << ans - 1;
