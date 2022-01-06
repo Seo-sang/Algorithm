@@ -4,6 +4,7 @@ using namespace std;
 
 const int MN = 1001;
 const int INF = 1e9;
+
 //인덱스, 현재, 처음
 int home[MN][3][3];
 
