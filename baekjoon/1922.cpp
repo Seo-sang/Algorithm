@@ -45,7 +45,6 @@ int main() {
         int fu = find(u);
         int fv = find(v);
         if(fu == fv) continue;
-        cout << u << ' ' << v << endl;
         ans += w;
         p[fu] = fv;
     }

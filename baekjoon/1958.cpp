@@ -21,7 +21,6 @@ int main() {
                 else
                     dp[i][j][k] = max(dp[i-1][j][k], max(dp[i][j-1][k], dp[i][j][k-1]));
                 ans = max(ans, dp[i][j][k]);
-                cout << dp[i][j][k] << endl;
             }
         }
     }
