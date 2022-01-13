@@ -8,6 +8,7 @@
         "random": "cpp",
         "ostream": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "*.tcc": "cpp"
     }
 }
