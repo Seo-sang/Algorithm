@@ -2,7 +2,7 @@
 
 using namespace std;
 const int MK = 21;
-int tree[2 << (MK + 1)];
+int tree[2 << MK];
 int K;
 
 int dfs(int idx) {
