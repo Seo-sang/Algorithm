@@ -13,7 +13,7 @@ void merge(int start1, int end1, int start2, int end2) {
     int idx1 = start1, idx2 = start2;
     int idx = start1;
     while(idx1 <= end1 && idx2 <= end2) {
-        if(arr[idx1] < arr[idx2]) {
+        if(arr[idx1] <= arr[idx2]) {
             tmp[idx++] = arr[idx1++];
         }
         else {
@@ -41,6 +41,7 @@ void mergesort(int start, int end) {
 }
 
 int main() {
+    ios::sync_with_stdio(false); cin.tie(NULL);
     int N; cin >> N;
     for(int i = 0; i < N; i++) 
         cin >> arr[i];
