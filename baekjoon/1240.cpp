@@ -3,13 +3,13 @@
 using namespace std;
 const int MN = 1001;
 vector<pair<int,int> > g[MN];
-bool visit[MN];
+bool visited[MN];
 int a, b;
 
 int dfs(int n) {
     for(pair<int,int> e : g[n]) {
-        if(visit[e.first]) continue;
-        visit[e.first] = true;
+        if(visited[e.first]) continue;
+        visited[e.first] = true;
         if(e.first == b) return e.second;
         int ret = dfs(e.first);
         if(ret != 0) {
@@ -30,9 +30,9 @@ int main() {
     }
 
     while(M--) {
-        memset(visit, 0, sizeof(visit));
+        memset(visited, 0, sizeof(visited));
         cin >> a >> b;
-        visit[a] = true;
+        visited[a] = true;
         cout << dfs(a) << '\n';
     }
 }
