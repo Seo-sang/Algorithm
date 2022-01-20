@@ -139,7 +139,7 @@ void dfs(pos now, vector<vector<int>> board, vector<int> visit, int cnt, int tot
     }
 }
 
-int solution(vector<vector<int>> board, int r, int c) {
+int solution(vector<vector<int> > board, int r, int c) {
     for(int i = 0; i < board.size(); i++) {
         for(int j = 0; j < board[i].size(); j++) {
             if(board[i][j] != 0) {
