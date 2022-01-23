@@ -3,54 +3,52 @@
 using namespace std;
 const int MN = 100001;
 int arr[MN];
-int sorted[MN];
-int tmp[MN];
-void merge(int s1, int e1, int s2, int e2) {
-    int idx1 = s1, idx2 = s2;
-    int idx = s1;
-    while(idx1 <= e1 && idx2 <= e2) {
-        if(sorted[idx1] < sorted[idx2])
-            tmp[idx++] = sorted[idx1++];
-        else
-            tmp[idx++] = sorted[idx2++];
-    }
+vector<int> seg[MN * 3];
 
-    while(idx1 <= e1) {
-        tmp[idx++] = sorted[idx1++];
+void update(int node, int start, int end, int pos, int value) {
+    if(pos < start || end < pos) return;
+    if(start == end) {
+        seg[node].push_back(value);
+        return;
     }
-    while(idx2 <= e2) {
-        tmp[idx++] = sorted[idx2++];
-    }
-    memcpy(sorted + s1, tmp + s1, sizeof(int) * (e2 - s1 + 1));
+    seg[node].push_back(value);
+    int mid = (start + end) / 2;
+    update(node * 2, start, mid, pos, value);
+    update(node * 2 + 1, mid + 1, end, pos, value);
 }
 
-void divNconq(int start, int end, int left, int right) {
-    if(end < left || right < start) return;
-    if(start == end) return;
-    int mid = (start + end) / 2;
-    divNconq(start, mid, left, right);
-    divNconq(mid + 1, end, left, right);
+int query(int node, int start, int end, int left, int right, int value) {
+    if(end < left || right < start) return 0;
 
-    merge(start, mid, mid + 1, end);
+    if(left <= start && end <= right) 
+        return upper_bound(seg[node].begin(), seg[node].end(), value) - seg[node].begin();
+    
+    int mid = (start + end) / 2;
+    return query(node * 2, start, mid, left, right, value) + query(node * 2 + 1, mid + 1, end, left, right, value);
 }
 
 int main() {
     ios::sync_with_stdio(false); cin.tie(NULL);
 
     int N, M; cin >> N >> M;
-    for(int i = 0; i < N; i++)
-        cin >> arr[i];
+    for(int i = 0; i < N; i++) {
+        int a; cin >> a;
+        update(1, 0, N - 1, i, a);
+    }
+
+    for(int i = 0; i < MN * 3; i++)
+        sort(seg[i].begin(), seg[i].end());
 
     while(M--) {
         int i, j, k; cin >> i >> j >> k;
-        memcpy(sorted, arr, sizeof(sorted));
-        i--;
-        j--;
-        k--;
-        divNconq(0, N - 1, i, j);
-        for(int a = 0; a < N; a++)
-            cout << sorted[a] << ' ';
-        cout << endl;
-        cout << sorted[i + k] << '\n';
+        int l = -1e9, r = 1e9;
+        while(l <= r) {
+            int mid = (l + r) / 2;
+            int rst = query(1, 0, N - 1, i - 1, j - 1, mid);
+            if(rst < k) l = mid +1;
+            else r = mid - 1;
+        }
+
+        cout << l << '\n';
     }
 }
