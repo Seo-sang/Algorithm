@@ -2,7 +2,6 @@
 
 using namespace std;
 const int MN = 100001;
-int arr[MN];
 vector<int> seg[MN * 3];
 
 void update(int node, int start, int end, int pos, int value) {
