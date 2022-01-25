@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 #define ll long long
-
 using namespace std;
-
 const int MN = 100001;
 ll arr[MN];
 
@@ -10,17 +8,15 @@ ll divNconq(int start, int end) {
     if(start == end) return arr[start];
     int mid = (start + end) / 2;
     int l = mid, r = mid + 1;
-    ll ret = max(divNconq(start, mid), divNconq(mid + 1, end));
     ll h = min(arr[l], arr[r]);
+    ll ret = max(divNconq(start, mid), divNconq(mid + 1, end));
 
     ret = max(ret, h * (r - l + 1));
 
     while(start < l || r < end) {
-        if(start == l)
-            h = min(h, arr[++r]);
-        else if(r == end)
-            h = min(h , arr[--l]);
-        else if(arr[l - 1] > arr[r + 1]) h = min(h, arr[--l]);
+        if(start == l) h = min(h, arr[++r]);
+        else if(r == end) h = min(h, arr[--l]);
+        else if(arr[l-1] > arr[r + 1]) h = min(h, arr[--l]);
         else h = min(h, arr[++r]);
 
         ret = max(ret, h * (r - l + 1));
@@ -29,17 +25,11 @@ ll divNconq(int start, int end) {
     return ret;
 }
 
-
 int main() {
     ios::sync_with_stdio(false); cin.tie(NULL);
-    int N;
-    while(true) {
-        cin >> N;
-        memset(arr, 0, sizeof(arr));
-        if(!N) break;
-        for(int i = 0; i < N; i++)
-            cin >> arr[i];
+    int N; cin >> N;
+    for(int i = 0; i < N; i++)
+        cin >> arr[i];
 
-        cout << divNconq(0, N - 1) << '\n';
-    }
+    cout << divNconq(0, N - 1);
 }
