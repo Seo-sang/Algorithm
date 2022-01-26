@@ -3,38 +3,46 @@
 
 using namespace std;
 const int MN = 10001;
-int arr[MN];
-int N, M;
+ll arr[MN];
+ll N, M;
 
-ll f(int mid) {
+ll f(ll mid) {
     ll ret = 0;
     for(int i = 0; i < M; i++)
-        ret += (arr[i] / mid);
+        ret += (mid / arr[i] + 1);
 
     return ret;
 }
 int main() {
+    ios::sync_with_stdio(false); cin.tie(NULL);
+
     cin >> N >> M;
-    ll lo = 31, hi;
+    ll lo = -1LL, hi = 0;
     for(int i = 0; i < M; i++) {
         cin >> arr[i];
-        lo = min(lo, arr[i]);
+        hi = max(hi, arr[i]);
     }
-    lo--;
-    hi = lo * N;
+    lo = -1LL;
+    hi = hi * N;
 
+    if(N <= M) {
+        cout << N;
+        return 0;
+    }
     while(lo + 1 < hi) {
-        int mid = (lo + hi) / 2;
+        ll mid = (lo + hi) / 2;
         ll ret = f(mid);
-        if(ret < N - 1) lo = mid;
+        if(ret < N) lo = mid;
         else hi = mid;
     }
-    cout << hi << endl;
 
+    ll ans = 0;
+    ll remain = N - f(hi - 1);
     for(int i = 0; i < M; i++) {
-        if(arr[i] % hi == 0) {
-            cout << i + 1;
-            break;
-        }
+        if(remain == 0) break;
+        if(hi % arr[i] == 0) remain--;
+        ans = i;
     }
+
+    cout << ans + 1;
 }
