@@ -15,7 +15,7 @@ ll f(int mid) {
 }
 int main() {
     cin >> N >> M;
-    int lo = 31, hi;
+    ll lo = 31, hi;
     for(int i = 0; i < M; i++) {
         cin >> arr[i];
         lo = min(lo, arr[i]);
