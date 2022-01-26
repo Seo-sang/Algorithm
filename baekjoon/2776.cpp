@@ -5,6 +5,7 @@ const int MN = 1e6 + 1;
 int arr[MN];
 
 int main() {
+    ios::sync_with_stdio(false); cin.tie(NULL);
     int T; cin >> T;
     while(T--) {
         int N; cin >> N;
