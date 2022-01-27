@@ -13,6 +13,7 @@ ll f(int mid) {
 
     return ret;
 }
+
 int main() {
 
     cin >> N >> M;
