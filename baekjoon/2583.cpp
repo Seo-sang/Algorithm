@@ -18,7 +18,6 @@ void color(int y1, int x1, int y2, int x2) {
     for(int i = x1; i <= x2; i++)
         for(int j = y1; j <= y2; j++) {
             board[i][j] = 1;
-            //cout << i << ' ' << j << endl;
         }
 }
 
@@ -45,15 +44,6 @@ int main() {
     for(int i = 0; i < K; i++) {
         cin >> x1 >> y1 >> x2 >> y2;
         color(x1, y1, x2 - 1, y2 - 1);
-        /*
-        cout << endl;
-        for(int i = 0; i < M; i++) {
-            for(int j = 0; j < N; j++) {
-                cout << board[i][j] << ' ';
-            }
-            cout << endl;
-        }
-        */
     }
     
     

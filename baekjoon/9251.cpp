@@ -15,9 +15,7 @@ int main() {
         for(int j = 1; j < s2.size(); j++) {
             if(s1[i] == s2[j]) arr[i][j] = arr[i-1][j-1] + 1;
             else arr[i][j] = max(arr[i-1][j], arr[i][j-1]);
-            cout << arr[i][j] << ' ';
         }
-        cout << endl;
     }
 
     cout << arr[s1.size()-1][s2.size()-1];
