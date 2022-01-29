@@ -1,7 +1,15 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
-vector< pair<int,int> > v;
+multiset<int> s;
+
 int main() {
+    s.insert(10);
+    s.insert(13);
+    s.insert(13);
+    auto it = s.begin();
+    it++;
+    it++;
+    it--;
+    cout << *it << endl;
 }
