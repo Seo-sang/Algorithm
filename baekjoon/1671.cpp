@@ -11,21 +11,23 @@ vector<int> g[MN];
 int p[MN];
 bool visited[MN];
 
-void dfs(int n) {
+int dfs(int n) {
     for(int nxt : g[n]) {
         if(visited[nxt]) continue;
         visited[nxt] = true;
-        if(p[nxt] == -1) {
+        if(p[nxt] == -1 || dfs(p[nxt])) {
             p[nxt] = n;
-            break;
+            return 1;
         }
-
     }
+    return 0;
 }
 
 int main() {
     ios::sync_with_stdio(false); cin.tie(NULL);
     int N; cin >> N;
+    shark tmp = {0, 0, 0};
+    arr.push_back(tmp);
     memset(p, -1, sizeof(p));
     for(int i = 1; i <= N; i++) {
         int x, y, z; cin >> x >> y >> z;
@@ -43,8 +45,6 @@ int main() {
     }
     for(int i = 1; i <= N; i++) {
         for(int j = 0; j < 2; j++) {
-            memset(visited, 0, sizeof(visited));
-            dfs(i);
             memset(visited, 0, sizeof(visited));
             dfs(i);
         }
