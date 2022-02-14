@@ -3,7 +3,7 @@
 using namespace std;
 const int MN = 1000001;
 const int MOD = 1e9 + 7;
-ll seg[MN];
+ll seg[MN * 3];
 
 ll update(int node, int start, int end, int pos, ll value) {
     if(pos < start || end < pos) return seg[node];
