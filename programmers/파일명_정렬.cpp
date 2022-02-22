@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -13,31 +14,37 @@ struct edge {
 vector<edge> arr;
 
 bool cmp(edge a, edge b) {
-    if(a.head == b.head) {
-        if(a.number == b.number)
-            return a.tail < b.tail;
-        else
-            return a.number < b.number;
-    }
+    if(a.head == b.head)
+        return a.number < b.number;
     else
         return a.head < b.head;
+}
+
+string modify(string s) {
+    string ret = "";
+
+    for(char c : s)
+        ret += toupper(c);
+    
+    return ret;
 }
 
 vector<string> solution(vector<string> files) {
     vector<string> answer;
     
     for(int i = 0; i < files.size(); i++) {
-        string s = files[i];
+        string s = modify(files[i]);
+        cout << s << endl;
         edge e;
         e.head = "";
         int j;
         for(j = 0; j < s.size(); j++) {
-            if(s[j] >= '0' && s[j] <= '9') break;
+            if(isdigit(s[j])) break;
             e.head += s[j];
         }
         string tmp = "";
-        for(; j < s.size(); j++)
-            if(s[j] >= '0' && s[j] <= '9')
+        for(int k = 0; k < 5 && j < s.size(); k++, j++)
+            if(isdigit(s[j]))
                 tmp += s[j];
         
         e.number = stoi(tmp);
@@ -46,14 +53,17 @@ vector<string> solution(vector<string> files) {
         else
             e.tail = "";
         
+        e.idx = i;
         arr.push_back(e);
-        e.idx = j;
     }
     
-    sort(arr.begin(), arr.end(), cmp);
+    stable_sort(arr.begin(), arr.end(), cmp);
     
-    for(edge e : arr)
+    //cout << arr.size();
+    for(edge e : arr) {
         answer.push_back(files[e.idx]);
+        //cout << e.idx << endl;
+    }
     
     return answer;
 }
