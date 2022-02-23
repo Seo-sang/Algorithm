@@ -1,54 +1,93 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include <set>
 #include <iostream>
 
 using namespace std;
-set<int> s;
-stack<int> st;
-const int MN = 1000001;
-bool vst[MN];
+struct node {
+    node *prev;
+    int value;
+    node *next;
+};
+node *head, *tail, *list;
+
+stack<node *> st;
 
 string solution(int n, int k, vector<string> cmd) {
     string answer = "";
-    for(int i = 0; i < n; i++) 
-        s.insert(i);
+    vector<bool> vst(n);
+    list = new node;
+    list->value = 0;
+    list->prev = NULL;
+    list->next = NULL;
+    head = tail = list;
+    node *now, *del;
     
-    auto now = s.find(k);
-        
+    for(int i = 1; i < n; i++) {
+        node* input = new node;
+        input->value = i;
+        input->prev = tail;
+        input->next = NULL;
+        tail->next = input;
+        tail = tail->next;
+        if(k == i)
+            now = tail;
+    }
+    
     for(string str : cmd) {
         int num;
-        
         switch(str[0]) {
             case 'U':
                 num = stoi(str.substr(2));
                 while(num--)
-                    now--;
+                    now = now->prev;
                 break;
             case 'D':
                 num = stoi(str.substr(2));
                 while(num--)
-                    now++;
+                    now = now->next;
                 break;
             case 'C':
-                st.push(*now);
-                now++;
-                if(now == s.end()) {
-                    now--;
-                    now--;
+                st.push(now);
+                del = now;
+                if(del == tail) {
+                    now = now->prev;
+                    now->next = NULL;
+                    tail = now;
                 }
-                s.erase(st.top());
+                else {
+                    now = now->next;
+                    if(del == head) {
+                        head = now;
+                        now->prev = NULL;
+                    }
+                    else {
+                        del->prev->next = del->next;
+                        del->next->prev = del->prev;
+                    }
+                }
                 break;
             case 'Z':
-                s.insert(st.top());
-                st.pop();
+                del = st.top(); st.pop();
+                if(del->prev != NULL) {
+                    del->prev->next = del;
+                    if(del->prev == tail)
+                        tail = del;
+                }
+                if(del->next != NULL) {
+                    del->next->prev = del;
+                    if(del->next == head)
+                        head = del;
+                }
                 break;
         }
     }
     
-    for(auto it = s.begin(); it != s.end(); it++)
-        vst[*it] = true;
+    node *it = head;
+    while(it != NULL) {
+        vst[it->value] = true;
+        it = it->next;
+    }
     
     for(int i = 0; i < n; i++) {
         if(vst[i])
