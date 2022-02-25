@@ -10,6 +10,7 @@ using namespace std;
 
 char op[4] = {'+', '-', '*', '/'};
 int idx[4] = {0, 1, 2, 3};
+
 vector<ll> num;
 vector<char> ope;
 vector<ll> numst;
@@ -37,9 +38,6 @@ long long solution(string expression) {
         numst = num;
         opst = ope;
         for(int i = 0; i < 4; i++) {
-            for(int k = 0; k < 4; k++)
-                cout << op[idx[k]] << ' ';
-            cout << endl;
             tmp1.clear(), tmp2.clear();
             for(int j = 0; j < opst.size(); j++) {
                 if(tmp1.empty()) {
@@ -67,16 +65,15 @@ long long solution(string expression) {
                             break;
                     }
                     tmp2.pop_back();
+                    tmp2.push_back(opst[j]);
                 }
                 else {
                     tmp1.push_back(numst[j]);
                     tmp2.push_back(opst[j]);
                 }
-                cout << tmp1.back() << ' ';
             }
-            if(tmp1.empty()) {
+            if(tmp1.empty())
                 tmp1.push_back(numst.back());
-            }
             else if(tmp2.back() == op[idx[i]]) {
                 ll n1;
                 switch(tmp2.back()) {
@@ -99,17 +96,14 @@ long long solution(string expression) {
                 }
                 tmp2.pop_back();
             }
-            else {
+            else
                 tmp1.push_back(numst.back());
-            }
+                
             numst = tmp1;
             opst = tmp2;
-            cout << numst.back() << endl;
         }
-        cout << numst.back() << endl;
         answer = max(answer, abs(numst.back()));
         
-        cout << endl;
     } while(next_permutation(idx, idx + 4));
     
     return answer;
