@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
-
+#define ll long long
 using namespace std;
 const int MN = 123457;
-int arr[MN], par[MN], child[MN];
+ll arr[MN];
+int par[MN], child[MN];
 queue<int> q;
 
 int main() {
@@ -10,7 +11,8 @@ int main() {
     int N; cin >> N;
     for(int i = 2; i <= N; i++) {
         char t;
-        int a, p;
+        ll a;
+        int p;
         cin >> t >> a >> p;
         if(t == 'W') arr[i] = -a;
         else arr[i] = a;
