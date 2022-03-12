@@ -20,12 +20,12 @@ int main() {
                 int cnt = 0;
                 memset(vst, 0, sizeof(vst));
                 for(int j = i + 1; j < K; j++) {
+                    if(cnt == N - 1) break;
                     auto it = find(v.begin(), v.end(), arr[j]);
                     if(it == v.end()) continue;
                     int idx = it - v.begin();
                     if(!vst[idx]) cnt++;
                     vst[idx] = true;
-                    if(cnt == N - 1) break;
                 }
                 for(int j = 0; j < N; j++) {
                     if(!vst[j]) {
