@@ -8,7 +8,7 @@ int dx[4] = {1, 0, 0, -1};
 int dy[4] = {0, 1, -1, 0};
 int arr[MN][MN];
 int nxt[MN][MN];
-bool vst[MN][MN];
+bool vst[MN][MN], normal[MN][MN];
 
 void print() {
     for(int i = 0; i < N; i++) {
@@ -49,11 +49,14 @@ int main() {
         int rainbow = 0;
 
         //그룹 선정
+        memset(normal, 0, sizeof(normal));
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < N; j++) {
-                if(arr[i][j] < 1 || arr[i][j] > M) continue;
+                if(normal[i][j]) continue;
+                if(arr[i][j] < 1 || arr[i][j] > M) continue; //일반 블록이 아닌 경우 제외
                 memset(vst, 0, sizeof(vst));
                 vst[i][j] = true;
+                normal[i][j] = true;
                 queue<P> q; q.push(make_pair(i, j));
                 int cnt = 1;
                 int rain = 0;
@@ -66,6 +69,7 @@ int main() {
                             if(vst[nx][ny]) continue;
                             if(arr[nx][ny] != 0 && arr[nx][ny] != arr[i][j]) continue;
                             if(arr[nx][ny] == 0) rain++;
+                            else normal[nx][ny] = true;
                             vst[nx][ny] = true;
                             cnt++;
                             q.push(make_pair(nx, ny));
