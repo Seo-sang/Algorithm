@@ -39,46 +39,45 @@ void compact() {
     ball = rst;
 }
 
+//폭발하는 함수
 void explode() {
     vector<int> rst;
-    rst.push_back(0);
-    for(int i = 1; i < ball.size(); i++) {
-        if(rst.size() < 4) rst.push_back(ball[i]);
-        else {
-            int idx = rst.size() - 1;
-            if(ball[i] == rst[idx] && rst[idx] == rst[idx-1] && rst[idx-1] == rst[idx-2]) {
-                for(int p = 0; p < 3; p++)
-                    rst.pop_back();
-                int n = 3;
-                int j = i + 1;
-                while(j < ball.size() && ball[i] == ball[j])
-                    j++;
-                j--;
-                n += (j - i + 1);
-                i = j;
-                destroy(ball[i], n);
+    while(true) {
+        rst.clear();
+        rst.push_back(0);
+        bool chk = false;
+        for(int i = 1; i < ball.size(); i++) {
+            if(ball[i] == 0) continue;
+            if(i + 3 < ball.size()) {
+                if(ball[i] == ball[i+1] && ball[i+1] == ball[i+2] && ball[i+2] == ball[i+3]) {
+                    int j = i + 4;
+                    while(j < ball.size() && ball[j] == ball[i]) j++;
+                    j--;
+                    destroy(ball[i], j - i  + 1);
+                    i = j;
+                    chk = true;
+                }
+                else
+                    rst.push_back(ball[i]);
             }
             else
                 rst.push_back(ball[i]);
         }
+        ball = rst;
+        if(!chk) break;
     }
-    while(rst.size() < N * N)
-        rst.push_back(0);
-    ball = rst;
+    while(ball.size() < N * N) ball.push_back(0);
 }
 
 void change() {
     vector<int> rst;
     rst.push_back(0);
     for(int i = 1; i < ball.size(); i++) {
+        if(ball[i] == 0) continue;
         int j = i + 1;
-        int cnt = 1;
-        while(j < ball.size() && ball[i] == ball[j]) {
-            j++;
-            cnt++;
-        }
+        while(j < ball.size() && ball[i] == ball[j]) j++;
         j--;
-        rst.push_back(cnt);
+        rst.push_back(j - i + 1);
         if(rst.size() == N * N) break;
         rst.push_back(ball[i]);
         if(rst.size() == N * N) break;
@@ -104,6 +103,7 @@ int main() {
                 pos.second += cy[c];
                 if(num == N * N) break;
             }
+            if(num == N * N) break;
             c = (c + 1) % 4;
         }
         if(num == N * N) break;
