@@ -9,14 +9,7 @@ ll K;
 vector<int> history;
 void dfs(int now, ll money, ll cnt, ll loan) {
     ll tmp, tmploan, tmpcnt;
-    //cout << now <<"번째 날 : " << money << "원 " << cnt << "개 " << loan << "원 "<<  endl;
     if(now == N - 1) {
-        //cout << money << ' ' << cnt << ' ' << loan << endl;
-        if(money + cnt * arr[now] == 2352000) {
-            // for(int e : history)
-            //     cout << e << ' ';
-            // cout << endl;
-        }
         ans = max(ans, money + cnt * arr[now]);
         return;
     }

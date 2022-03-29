@@ -23,6 +23,13 @@ int main() {
                     i++;
                 }
             }
+            if(i + 1 < T.size() && T[i + 1] == 'H') {
+                if(q) {
+                    ans++;
+                    q--;
+                    i++;
+                }
+            }
             else
                 S++;
         }
@@ -40,39 +47,14 @@ int main() {
         else
             H++;
     }
-    bool chk = true;
-    while(true) {
-        chk = false;
-        int SS = min(min(S, q), r);
-        int KK = min(min(K, p), r);
-        int HH = min(min(H, p), q);
-        cout << S << ' ' << K << ' ' << H << endl;
-        cout << p << ' ' << q << ' ' << r << endl;
-        if(SS > 0 && SS >= KK && SS >= HH) {
-            q -= SS;
-            r -= SS;
-            S -= SS;
-            ans += SS;
-            cout << "S " << SS << endl;
-            chk = true;
-        }
-        else if(KK > 0 && KK >= SS && KK >= HH) {
-            p -= KK;
-            r -= KK;
-            K -= KK;
-            ans += KK;
-            cout << "K " << KK << endl;
-            chk = true;
-        }
-        else if(HH > 0 && HH >= SS && HH >= KK) {
-            p -= HH;
-            q -= HH;
-            H -= HH;
-            ans += HH;
-            cout << "H " << HH << endl;
-            chk = true;
-        }
-        if(!chk) break;
-    }
-    cout << ans;
+
+    cout << ans << endl;
+
+    int mnum = 0;
+    int sum = 0;
+    int SS, KK, HH;
+    int pp = p, qq = q, rr = r;
+
+
+    cout << ans + mnum;
 }
