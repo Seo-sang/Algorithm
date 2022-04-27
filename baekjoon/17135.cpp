@@ -3,8 +3,7 @@
 
 using namespace std;
 const int MN = 16;
-int input[MN][MN];
-int board[MN][MN];
+int input[MN][MN], board[MN][MN];
 bool vst[MN][MN];
 int dx[3] = {0, -1, 0};
 int dy[3] = {-1, 0, 1};
@@ -27,9 +26,8 @@ P bfs(int x, int y) {
                 if(vst[nx][ny]) continue;
                 vst[nx][ny] = true;
                 if(now.w + 1 <= D) {
-                    if(board[nx][ny] == 1) {
+                    if(board[nx][ny] == 1)
                         return make_pair(nx, ny);
-                    }
                     q.push({nx, ny, now.w + 1});
                 }
             }
@@ -62,6 +60,7 @@ int main() {
     for(int i = 0; i < N; i++)
         for(int j = 0; j < M; j++)
             cin >> input[i][j];
+
     int ans = 0;
     for(int i = 0; i < M - 2; i++)
         for(int j = i + 1; j < M - 1; j++)
