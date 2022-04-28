@@ -25,6 +25,7 @@ void print() {
             cout << board[i][j] << ' ';
         cout << endl;
     }
+    cout << endl;
 }
 
 void print2() {
@@ -33,16 +34,18 @@ void print2() {
             cout << nxt[i][j] << ' ';
         cout << endl;
     }
+
+    cout << endl;
 }
 
 bool nowall(int x, int y, int nx, int ny, int chk, int d) {
     if(chk == 0) {
-        if(abs(x - nx) == 0) {//가로
-            if(hor.find(make_pair(x, min(y, ny))) != hor.end()) return false;
+        if(x - nx == 0) {//가로
+            if(hor.find(make_pair(x, min(ny, y))) != hor.end()) return false;
             else return true;
         }
         else { //세로
-            if(ver.find(make_pair(max(x, nx), y)) != ver.end()) return false;
+            if(ver.find(make_pair(max(nx, x), y)) != ver.end()) return false;
             else return true;
         }
     }
@@ -67,12 +70,14 @@ void bfs(int x, int y, int d) {
     memset(vst, 0, sizeof(vst));
     int nx = x + dx[d];
     int ny = y + dy[d];
-    queue<node> q; q.push(node (nx, ny, 5));
-    nxt[nx][ny] += 5;
-    vst[nx][ny] = true;
+    queue<node> q;
+    if(nx >= 0 && nx < R && ny >= 0 && ny < C && nowall(x, y, nx, ny, 0, d)) {
+        q.push(node (nx, ny, 5));
+        nxt[nx][ny] += 5;
+        vst[nx][ny] = true;
+    }
     while(!q.empty()) {
         node now = q.front(); q.pop();
-        int nx, ny;
         nx = now.x + dx[d];
         ny = now.y + dy[d];
         if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny] && nowall(now.x, now.y, nx, ny, 0, d)) {
@@ -121,29 +126,33 @@ void manipulate() {
             int nx, ny;
             nx = i + dx[1];
             ny = j + dy[1];
-            if(hor.find(make_pair(i, j)) == hor.end()) {
-                int gap = abs(board[i][j] - board[nx][ny]) / 4;
-                if(board[i][j] > board[nx][ny]) {
-                    nxt[i][j] -= gap;
-                    nxt[nx][ny] += gap;
-                }
-                else {
-                    nxt[i][j] += gap;
-                    nxt[nx][ny] -= gap;
+            if(nx >= 0 && nx < R && ny >= 0 && ny < C) {
+                if(hor.find(make_pair(i, j)) == hor.end()) {
+                    int gap = abs(board[i][j] - board[nx][ny]) / 4;
+                    if(board[i][j] > board[nx][ny]) {
+                        nxt[i][j] -= gap;
+                        nxt[nx][ny] += gap;
+                    }
+                    else {
+                        nxt[i][j] += gap;
+                        nxt[nx][ny] -= gap;
+                    }
                 }
             }
             
             nx = i + dx[4];
             ny = j + dy[4];
-            if(ver.find(make_pair(nx, ny)) == ver.end()) {
-                int gap = abs(board[i][j] - board[nx][ny]) / 4;
-                if(board[i][j] > board[nx][ny]) {
-                    nxt[i][j] -= gap;
-                    nxt[nx][ny] += gap;
-                }
-                else {
-                    nxt[i][j] += gap;
-                    nxt[nx][ny] -= gap;
+            if(nx >= 0 && nx < R && ny >= 0 && ny < C) {
+                if(ver.find(make_pair(nx, ny)) == ver.end()) {
+                    int gap = abs(board[i][j] - board[nx][ny]) / 4;
+                    if(board[i][j] > board[nx][ny]) {
+                        nxt[i][j] -= gap;
+                        nxt[nx][ny] += gap;
+                    }
+                    else {
+                        nxt[i][j] += gap;
+                        nxt[nx][ny] -= gap;
+                    }
                 }
             }
         }
@@ -192,9 +201,13 @@ int main() {
     int ans = 0;
     while(true) {
         wind();
+        print();
         manipulate();
+
+        print();
         decrease();
         ans++;
+        print();
         if(ans > 100) break;
         if(check()) break;
     }
