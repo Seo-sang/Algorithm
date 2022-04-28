@@ -9,55 +9,106 @@ int dy[5] = {0, 1, -1, 0, 0};
 int nearx[10] = {0, 0, -1, 1, -1, 1, -1, -1, 1, 1};
 int neary[10] = {0, 0, 1, 1, -1, -1, -1, 1, -1, 1};
 int board[MN][MN], nxt[MN][MN];
-bool wall[MN][MN], vst[MN][MN];
-map<int, vector<P>> warm;
+bool vst[MN][MN];
+set<P> ver, hor;
+map<int, vector<P> > warm;
 set<P> inspec;
 
 struct node {
     int x, y, w;
+    node(int x, int y, int w) : x(x), y(y), w(w) {}
 };
+
+void print() {
+    for(int i = 0; i < R; i++) {
+        for(int j = 0; j < C; j++)
+            cout << board[i][j] << ' ';
+        cout << endl;
+    }
+}
+
+void print2() {
+    for(int i = 0; i < R; i++) {
+        for(int j = 0; j < C; j++)
+            cout << nxt[i][j] << ' ';
+        cout << endl;
+    }
+}
+
+bool nowall(int x, int y, int nx, int ny, int chk, int d) {
+    if(chk == 0) {
+        if(abs(x - nx) == 0) {//가로
+            if(hor.find(make_pair(x, min(y, ny))) != hor.end()) return false;
+            else return true;
+        }
+        else { //세로
+            if(ver.find(make_pair(max(x, nx), y)) != ver.end()) return false;
+            else return true;
+        }
+    }
+    else {
+        switch(d) {
+            case 1:
+            case 2:
+                if(ver.find(make_pair(max(x, nx), y)) != ver.end()) return false;
+                if(hor.find(make_pair(nx, min(y, ny))) != hor.end()) return false;
+                break;
+            case 3:
+            case 4:
+                if(ver.find(make_pair(max(nx, x), ny)) != ver.end()) return false;
+                if(hor.find(make_pair(x, min(y, ny))) != hor.end()) return false;
+                break;
+        }
+        return true;
+    }
+}
 
 void bfs(int x, int y, int d) {
     memset(vst, 0, sizeof(vst));
-    queue<node> q; q.push({x, y, 6});
-    vst[x][y] = true;
+    int nx = x + dx[d];
+    int ny = y + dy[d];
+    queue<node> q; q.push(node (nx, ny, 5));
+    nxt[nx][ny] += 5;
+    vst[nx][ny] = true;
     while(!q.empty()) {
         node now = q.front(); q.pop();
         int nx, ny;
         nx = now.x + dx[d];
         ny = now.y + dy[d];
-        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny] && !(wall[x][y] && wall[nx][ny])) {
+        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny] && nowall(now.x, now.y, nx, ny, 0, d)) {
             vst[nx][ny] = true;
             nxt[nx][ny] += now.w - 1;
-            if(now.w > 0)
-                q.push({nx, ny, now.w - 1});
+            if(now.w > 1)
+                q.push(node(nx, ny, now.w - 1));
         }
         
         nx = now.x + nearx[d * 2];
         ny = now.y + neary[d * 2];
-        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny]) {
+        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny] && nowall(now.x, now.y, nx, ny, 1, d)) {
             vst[nx][ny] = true;
             nxt[nx][ny] += now.w - 1;
-            if(now.w > 0)
-                q.push({nx, ny, now.w - 1});
+            if(now.w > 1)
+                q.push(node(nx, ny, now.w - 1));
         }
 
         nx = now.x + nearx[d * 2 + 1];
         ny = now.y + neary[d * 2 + 1];
-        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny]) {
+        if(nx >= 0 && nx < R && ny >= 0 && ny <  C && !vst[nx][ny] && nowall(now.x, now.y, nx, ny, 1, d)) {
             vst[nx][ny] = true;
             nxt[nx][ny] += now.w - 1;
-            if(now.w > 0)
-                q.push({nx, ny, now.w - 1});
+            if(now.w > 1)
+                q.push(node(nx, ny, now.w - 1));
         }
     }
 }
 
 void wind() {
     memcpy(nxt, board, sizeof(nxt));
-    for(auto it = warm.begin(); it != warm.end(); it++)
-        for(P e : it->second)
+    for(auto it = warm.begin(); it != warm.end(); it++) {
+        for(P e : it->second) {
             bfs(e.first, e.second, it->first);
+        }
+    }
 
     memcpy(board, nxt, sizeof(board));
 }
@@ -70,7 +121,7 @@ void manipulate() {
             int nx, ny;
             nx = i + dx[1];
             ny = j + dy[1];
-            if(!wall[i][j] || !wall[nx][ny]) {
+            if(hor.find(make_pair(i, j)) == hor.end()) {
                 int gap = abs(board[i][j] - board[nx][ny]) / 4;
                 if(board[i][j] > board[nx][ny]) {
                     nxt[i][j] -= gap;
@@ -84,8 +135,8 @@ void manipulate() {
             
             nx = i + dx[4];
             ny = j + dy[4];
-            if(!wall[i][j] || !wall[nx][ny]) {
-                int gap = abs(board[i][j] - board[nx][ny]);
+            if(ver.find(make_pair(nx, ny)) == ver.end()) {
+                int gap = abs(board[i][j] - board[nx][ny]) / 4;
                 if(board[i][j] > board[nx][ny]) {
                     nxt[i][j] -= gap;
                     nxt[nx][ny] += gap;
@@ -118,32 +169,25 @@ bool check() {
     return true;
 }
 
-void print() {
-    for(int i = 0; i < R; i++) {
-        for(int j = 0; j < C; j++)
-            cout << board[i][j] << ' ';
-        cout << endl;
-    }
-}
 
 int main() {
     cin >> R >> C >> K;
     for(int i = 0; i < R; i++) {
         for(int j = 0; j < C; j++) {
             int a; cin >> a;
-            if(1 <= a && a <= 4) warm[a].push_back({i, j});
-            else if(a == 5) inspec.insert({i, j});
+            if(1 <= a && a <= 4) warm[a].push_back(make_pair(i, j));
+            else if(a == 5) inspec.insert(make_pair(i, j));
         }
     }
 
     int W; cin >> W;
     while(W--) {
         int x, y, t; cin >> x >> y >> t;
+        x--, y--;
         if(t == 0)
-            wall[x-1][y] = true;
+            ver.insert(make_pair(x, y));
         else
-            wall[x][y+1]= true;
-        wall[x][y] = true;
+            hor.insert(make_pair(x, y));
     }
     int ans = 0;
     while(true) {
@@ -151,9 +195,10 @@ int main() {
         manipulate();
         decrease();
         ans++;
-        print();
-        cout << endl;
+        if(ans > 100) break;
         if(check()) break;
     }
+    print();
+    
     cout << ans;
 }

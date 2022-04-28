@@ -5,17 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cpp - 활성 파일 빌드 및 디버그",
-            "type": "cppdbg",
+            "name": "clang++ - Build and debug active file",
+            "type": "lldb",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
             "args": [],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "lldb",
-            "preLaunchTask": "C/C++: cpp 활성 파일 빌드"
+            "preLaunchTask": "clang++ build active file"
         },
         {
             "type": "lldb",

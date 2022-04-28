@@ -2,11 +2,16 @@
 
 int main()
 {
-    int a = 2;
-    float b = 6;
-    printf("1234567890\n");
-    printf("%-3d%2f\n", a, b);
-    printf("%d\n", a + b);
-    printf("%f\n", a + b);
-    return 0;
+    int num;
+    _Bool bit;
+    printf("-128부터 127까지의 십진수 정수 하나를 입력하세요 : ");
+    scanf("%d", &num);
+
+    printf("-128의 이진수는 ");
+    for(int i = 7; i >= 0; i--) {
+        bit = num & (1 << i);
+        printf("%d", bit);
+        if(i == 4) printf(" ");
+    }
+    printf(" 입니다.\n");
 }
