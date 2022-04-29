@@ -5,7 +5,7 @@ int main() {
     unsigned char num;
     printf("-128부터 127까지의 십진수 정수 하나를 입력하세요 : ");
     scanf("%d", &input);
-    printf("-128의 이진수는 ");
+    printf("%d의 이진수는 ", input);
     num = input;
     while(i) {
         printf("%d", num / i);
