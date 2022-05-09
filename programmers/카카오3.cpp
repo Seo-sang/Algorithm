@@ -11,22 +11,17 @@ using namespace std;
 const int MN = 151;
 const int INF = 1e9;
 
-//int dp[MN][MN];
 vector<vector<int>> dp(MN, vector<int> (MN, INF));
-int malp, mcop;
-
 struct node {
     int alp, cop, cost;
 };
 
 int solution(int alp, int cop, vector<vector<int>> problems) {
-    malp = 0, mcop = 0;
+    int malp = 0, mcop = 0, answer = INF;
     for(vector<int>& v : problems) {
         malp = max(malp, v[0]);
         mcop = max(mcop, v[1]);
     }
-
-    int answer = INF;
     queue<node> q; q.push({alp, cop, 0});
     while(!q.empty()) {
         node now = q.front(); q.pop();
