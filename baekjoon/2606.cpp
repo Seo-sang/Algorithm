@@ -1,31 +1,28 @@
-#include <iostream>
-#include <vector>
-#include <queue>
+#include <bits/stdc++.h>
 
 using namespace std;
 const int MN = 101;
-bool visit[MN];
 vector<int> g[MN];
+bool vst[MN];
+int ans = 0;
+
+void dfs(int n) {
+    for(int nxt : g[n]) {
+        if(vst[nxt]) continue;
+        vst[nxt] = true;
+        ans++;
+        dfs(nxt);
+    }
+}
 
 int main() {
     int N, M; cin >> N >> M;
     while(M--) {
-        int a, b; cin >> a >> b;
-        g[a].push_back(b);
-        g[b].push_back(a);
+        int u, v; cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
     }
-    int ans = 0;
-    queue<int> q;
-    q.push(1);
-    visit[1] = true;
-    while(!q.empty()) {
-        int now = q.front(); q.pop();
-        for(int e : g[now]) {
-            if(visit[e]) continue;
-            visit[e] = true;
-            ans++;
-            q.push(e);
-        }
-    }
+    vst[1] = true;
+    dfs(1);
     cout << ans;
 }

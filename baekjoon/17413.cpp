@@ -1,44 +1,28 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
-const int MN = 100001;
+
 int main() {
-    ios::sync_with_stdio(false); cin.tie(NULL);
-    string s;
-    string rvs;
-    getline(cin, s);
-    bool tag = false;
-    for(char c : s) {
-        if(c == '<') {
-            if(rvs.size()) {
-                reverse(rvs.begin(), rvs.end());
-                cout << rvs;
-                rvs.clear();
+    string str; getline(cin, str);
+    bool open = false;
+    string rvs = "";
+    for(int i = 0; i < str.size(); i++) {
+        if(str[i] == '<') {
+            cout << rvs;
+            rvs = "";
+            open = true;
+        }
+        if(open) cout << str[i];
+        else {
+            if(str[i] == ' ') {
+                cout << rvs << ' ';
+                rvs = "";
             }
-            tag = true;
+            else {
+                rvs = str[i] + rvs;
+            }
         }
-        if(c == '>') {
-            tag = false;
-            cout << c;
-            continue;
-        }
-        if(tag) {
-            cout << c;
-            continue;
-        }
-        
-        if(c == ' ') {
-            reverse(rvs.begin(), rvs.end());
-            cout << rvs << c;
-            rvs.clear();
-        }
-        else
-            rvs.push_back(c);
+        if(str[i] == '>') open = false;
     }
-    if(rvs.size()) {
-        reverse(rvs.begin(), rvs.end());
-        cout << rvs;
-        rvs.clear();
-    }
+    cout << rvs;
 }
