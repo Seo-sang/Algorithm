@@ -28,8 +28,9 @@ void dfs(int x, int y, int d, int cnt, int start) {
     int ny = y + dy[d];
     if(nx >= 0 && nx < N && ny >= 0 && ny < M) {
         if(board[nx][ny] != 0) {
-            if(board[nx][ny] != start && cnt + 1 > 1)
+            if(board[nx][ny] != start && cnt > 0) {
                 g.push_back(node(start, board[nx][ny], cnt + 1));
+            }
         }
         else
             dfs(nx, ny, d, cnt + 1, start);
@@ -71,14 +72,6 @@ int main() {
         }
     }
 
-    // cout << endl;
-    // for(int i = 0; i < N; i++) {
-    //     for(int j = 0; j < M; j++) {
-    //         cout << board[i][j] << ' ';
-    //     }
-    //     cout << endl;
-    // }
-
     //경로 구하기
     for(int i = 0; i < N; i++) {
         for(int j = 0; j < M; j++) {
@@ -100,7 +93,6 @@ int main() {
     sort(g.begin(), g.end(), cmp);
     int ans = 0, cnt = 1;
     for(node e : g) {
-        //cout << e.x << ' ' << e.y << ' ' << e.d << endl;
         int p1 = find(e.x);
         int p2 = find(e.y);
         if(p1 == p2) continue;
@@ -108,9 +100,9 @@ int main() {
         ans += e.d;
     }
     int pp = find(1);
-    for(int i = 2; i < idx; i++)
-        if(p[i] == pp) cnt++;
+    for(int i = 2; i <= idx; i++)
+        if(find(i) == pp) cnt++;
 
-    if(cnt == idx - 1) cout << ans;
+    if(cnt == idx) cout << ans;
     else cout << -1;
 }
