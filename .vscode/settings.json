@@ -82,7 +82,8 @@
         "streambuf": "c",
         "cmath": "cpp",
         "complex": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "ostream": "cpp"
     },
     "editor.insertSpaces": true,
     "editor.detectIndentation": false

@@ -20,7 +20,6 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
     int now = 0;
     int dsum = 0, psum = 0;
     while(!delivery.empty() || !pick.empty()) {
-        //cout << delivery.size() << ' ' << pick.size() << endl;
         now += cap;
         int mnum = 0;
         if(!delivery.empty())
@@ -29,7 +28,6 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
             mnum = max(mnum, pick[0].first);
         answer += 2 * mnum;
         while(now > dsum && !delivery.empty()) {
-            //cout << now << ' ' << delivery[0].first << ' ' << delivery[0].second << endl;
             if(now >= dsum + delivery[0].second) {
                 dsum += delivery[0].second;
                 delivery.pop_front();
@@ -47,12 +45,5 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
 
     }
 
-    
-
     return answer;
-}
-
-
-int main() {
-    cout << solution(4, 5, {1, 0, 3, 1, 2}, {0, 3, 0, 4, 0});
 }
