@@ -1,119 +1,154 @@
 import argparse
-
-from http_json2 import http_method
-
-MIN_SKILL = 1000
-MAX_SKILL = 100000
-AVR_SKILL = 40000
-STD_SKILL = 20000
-D = MAX_SKILL - MIN_SKILL
-
-BASE_URL = 'https://huqeyhi95c.execute-api.ap-northeast-2.amazonaws.com/prod'
+from http_module import method
 TOKEN = ""
+H = 1
+W = 1
+sim_data = []
 
-problem_info = {1: {"num_users" : 30, "avr_match " : 1},
-                2: {"num_users" : 900, "avr_match" : 45}}
+get_method = lambda url : method("GET", url, token=TOKEN)
+post_method = lambda url, data : method("POST", url, data=data, token=TOKEN)
+put_method = lambda url, data : method("PUT", url, data=data, token=TOKEN)
 
+###API###
+def api_start(prob, token):
+    ret = method("POST", '/start', {"problem" : prob}, token, True)
+    return ret.get('auth_key', "")
 
+#현재 날짜 예약 요청
+def api_new_requests():
+    #return method("GET", '/new_requests', token = TOKEN).get('reservations_info', [])
+    return get_method('/new_requests').get('reservations_info', [])
 
-def api_start(problem, init_token):
-    assert 1 <= problem <= 2
-    res = http_method("POST", BASE_URL, "/start", data={'problem' : problem}, token = init_token, init = True)
-    return res.get('auth_key', "")
+#예약 요청에 대한 승낙/거절
+def api_reply(data):
+    #return method("PUT", '/reply', data = {"replies" : data}, token = TOKEN)
+    return put_method('/reply', {"replies" : data})
 
-#GET 메소드
+#오늘 체크인하는 손님들에게 객실 번호를 배정
+def api_simulate():
+
+    res = put_method('/simulate', {"room_assign":sim_data})
+    print(res)
+
+#점수
 def api_score():
-    return http_method("GET", BASE_URL, "/score", token = TOKEN)
-
-def api_waiting_line(now):
-    return http_method("GET", BASE_URL, "/waiting_line", token = TOKEN).get('waiting_line', [])
-
-def api_game_result():
-    return http_method("GET", BASE_URL, "/game_result", token = TOKEN).get('game_result', [])
-
-def api_user_info():
-    return http_method("GET", BASE_URL, "/user_info", token = TOKEN).get('user_info', [])
-
-
-#PUT 메소드
-def api_match(data):
-    return http_method("PUT", BASE_URL, "/match", {"pairs" : data}, TOKEN)
-
-def api_change_grade(data):
-    return http_method("PUT", BASE_URL, "/change_grade", {"commands" : data}, TOKEN)
+    return method("GET", '/score', token = TOKEN)
 
 
 
 
-#functions
-def get_real_gap(real_time):
-    return (real_time - 40) / 35 * 99000 #-5 ~ 5의 평균값은 0이기 때문에 무시
 
-def get_relibaility(win, lose, real_gap):
-    #win기준으로 이길 확률
-    win_prob = win / (2 * win - real_gap)
-    #lose기준으로 이길 확률
-    lose_prob = (lose + real_gap) / (lose * 2 + real_gap)
+###functions###
+def get_response_due(request_date, checkin_date):
+    return min(request_date + 14, checkin_date - 1)
 
-    return (win_prob + lose_prob) / 2
+def get_room_number(row, col):
+    return row * 1000 + col
+
+#비어있는 방 찾기
+def find_room(amount, checkin, checkout, hotel):
+    for date in range(checkin, checkout):
+        for row in range(1, H+1):
+            for col in range(1, W + 1):
+                chk = 0
+                for a in range(amount):
+                    if col + a <= W:
+                        if hotel[date][row][col + a] != 0:
+                            chk = 1
+                            break
+                    else:
+                        chk = 1
+                        break
+                if chk == 0:
+                    return row, col
+    
+    return -1, -1
+
+#체크인
+def today_checkin(checkin, checkout, row, col, amount, hotel):
+    for d in range(checkin, checkout):
+        for c in range(col, col + amount):
+            hotel[d][row][c] = 1
 
 
 def solve(args):
-    global TOKEN
-    TOKEN = api_start(args.problem, args.init_token)
-    num_users = problem_info[args.problem]['num_users']
-
-    skills = {}
-    for id in range(1, num_users + 1):
-        skills[id] = AVR_SKILL
-
-    for now in range(595):
-        #게임 결과 확인
-        game_result = api_game_result()
-        for rst in game_result:
-            win = rst['win']
-            lose = rst['lose']
-            real_time = int(rst['taken'])
-            estimated_gap = abs(skills[win] - skills[lose])
-            real_gap = get_real_gap(real_time)
-            prob = get_relibaility(skills[win], skills[lose], real_gap)
-            value = prob * (estimated_gap - real_gap)
-            if value >= 0:
-                skills[win] = max(MIN_SKILL, skills[win] - value)
-                skills[lose] = min(MAX_SKILL, skills[lose] + value)
-            else:
-                skills[win] = min(MAX_SKILL, skills[win] + value)
-                skills[lose] = max(MIN_SKILL, skills[lose] - value)
-        #점수 수정
-        change_data = []
-        for id in range(1, num_users + 1):
-            change_data.append({"id" : id, "grade" : skills[id]})
-
-        #대기열 확인
-        waiting_line = api_waiting_line(now)
-        tmp_line = {}
-        for e in waiting_line:
-            if now - e['from'] == 15:
-                tmp_line[e['id']] = skills[e['id']]
-        sorted_line = sorted(tmp_line.items(), key = lambda x : x[1], reverse=True)
-        match_data = []
-        i = 0
-        while i + 1 < len(sorted_line):
-            match_data.append([sorted_line[i][0], sorted_line[i + 1][0]])
-            i += 2
-        api_match(match_data)
-    sorted_skills = sorted(skills.items(), key = lambda x : x[1], reverse = True)
-    api_match([])
-
-    return api_score()
+    global TOKEN, H, W
+    TOKEN = api_start(args.problem, args.token)
+    if args.problem == 1:
+        H = 3
+        W = 20
+        MAX_DATE = 200
+        MAX_ROOM = 10
+    else:
+        H = 10
+        W = 200
+        MAX_DATE = 1000
+        MAX_ROOM = 50
     
+    #일자마다 이어져있는 호텔 객실을 표시하는 배열
+    hotel = [[[0 for _ in range(W + 1)] for _ in range(H + 1)] for _ in range(MAX_DATE + 1)]
+
+    #체크인,체크아웃 손님
+    #checkin_list = [[] for _ in range(MAX_DATE + 1)]
+    #checkout_list = [[] for _ in range(MAX_DATE + 1)]
+
+    #방 마다 응답 대기 목록
+    waiting = [[] for _ in range(MAX_ROOM + 1)]
+    
+    today = 1
+    while today <= MAX_DATE:
+        #print('-----------', today, '----------------')
+        new_requests = api_new_requests()
+        print(new_requests)
+        #예약 요청 받아 대기 목록에 추가
+        for e in new_requests:
+            id = e['id']
+            amount = e['amount']
+            checkin_date = e['check_in_date']
+            checkout_date = e['check_out_date']
+            due_date = get_response_due(today, checkin_date)
+            waiting[amount].append({'id' : id, 'due_date' : due_date, 'checkin_date' : checkin_date, 'checkout_date' : checkout_date, 'period' : checkout_date - checkin_date})
+        
+        reply_data = []
+        sim_data.clear()
+        tmp = []
+        #승낙/거절
+        r = MAX_ROOM
+        while r > 0:
+            #기간이 짧은 순으로 정렬
+            sorted_waiting = sorted(waiting[r], key = lambda x : x['period'])
+            for e in sorted_waiting:
+                if e['due_date'] >= today: #기한이 아직 안 지난 경우
+                    row, col = find_room(r, e['checkin_date'], e['checkout_date'], hotel)
+                    if row != -1: #체크인 성공
+                        room_num = get_room_number(row, col)
+                        reply_data.append({"id" : e['id'], "reply" : "accepted"})
+                        num1 = e['id']
+                        num2 = get_room_number(row, col)
+                        sim_data.append({"id":num1, "room_number":num2})
+                        today_checkin(e['checkin_date'], e['checkout_date'], row, col, r, hotel)        
+            r-=1
+
+        tmp.append({"id":num1, "room_number":num2})
+
+        print(sim_data)
+        print(tmp)
+        api_reply(reply_data)
+        api_simulate()
+        #print("reply data : ", reply_data)
+        #객실 번호 배정(simulate)
+        #print("simulate data : ", simulate_data)
+        
+        today+=1
+
+    #점수 출력
+    api_simulate([])
+    print(api_score())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--problem", type=int, default = 1)
-    parser.add_argument("--init-token", type=str, required=True)
-    parser.add_argument("--match-skill", type=int, default=STD_SKILL)
-    parser.add_argument("--wait-weight", type=int, default=3)
+    parser.add_argument("--token", type=str, required=True)
     args = parser.parse_args()
 
-    print(solve(args))
+    solve(args)
