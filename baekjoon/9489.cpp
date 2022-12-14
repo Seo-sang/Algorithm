@@ -2,51 +2,45 @@
 #define P pair<int,int>
 
 using namespace std;
-const int MN = 1001;
-vector<vector<int> > arr;
-vector<int> g[MN];
-int pos;
 
-int dfs(int now, int prev) {
+const int MN = 1001;
+vector<int> arr;
+int p[MN];
+
+void init(int n) {
+    for(int i = 1; i <= n; i++)
+        p[i] = -1;
 }
 
 int main() {
+    ios::sync_with_stdio(false); cin.tie(NULL);
     int N, K;
     while(true) {
         cin >> N >> K;
         if(N == 0 && K == 0) break;
+        init(N);
         arr.clear();
-        for(int i = 0; i <= N; i++)
-            g[i].clear();
-        int before, now;
-        pos = 0;
-        for(int i = 0; i < N; i++) {
-            cin >> now;
-            if(i != 0) {
-                if(before + 1 < now) {
-                    arr.push_back(vector<int>(1, now));
+        queue<int> q;
+        int now, ans = 0, idx;
+        for(int i = 1; i <= N; i++) {
+            int a; cin >> a;
+            if(a == K) idx = i;
+            if(!arr.empty()) {
+                if(arr.back() + 1 != a) {
+                    now = q.front(); q.pop();
                 }
-                else {
-                    arr.back().push_back(now);
-                }
+                p[i] = now;
             }
             else {
-                idx = now;
+                p[i] = -1;
             }
-
-            before = now;
+            arr.push_back(a);
+            q.push(i);
         }
-        queue<P> q; q.push(make_pair(idx, 0));
-        int level;
-        while(!q.empty()) {
-            P n = q.front(); q.pop();
-            for(int e : arr[pos]) {
-                g[n.first].push_back(e);
-                q.push(make_pair(e, n.second + 1));
-                if(e == K) level = n.second + 1;
-            }
-            pos++;
+        for(int i = 1; i <= N; i++) {
+            if(i == idx) continue;
+            if(p[idx] != p[i] && p[p[idx]] == p[p[i]]) ans++;
         }
-        dfs(idx);
-    }
+        cout << ans << '\n';
+    } 
 }
