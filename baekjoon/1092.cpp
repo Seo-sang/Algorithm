@@ -32,6 +32,5 @@ int main() {
         sum += (it1 - it2);
     }
 
-    N -= sum;
 
 }
