@@ -27,6 +27,8 @@ long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) 
         if(!pick.empty())
             mnum = max(mnum, pick[0].first);
         answer += 2 * mnum;
+
+        
         while(now > dsum && !delivery.empty()) {
             if(now >= dsum + delivery[0].second) {
                 dsum += delivery[0].second;
