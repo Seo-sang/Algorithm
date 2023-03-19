@@ -38,7 +38,11 @@ int main() {
 
         if(!chk) break;
     }
+<<<<<<< HEAD
     if(box.empty()) cout << ans;
     else cout << -1;
+=======
+
+>>>>>>> f15caef686c664876eeb5785526a0a5d16a2aa27
 
 }
