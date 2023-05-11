@@ -5,7 +5,7 @@ using namespace std;
 
 map<string, set<string> > folder;
 map<string, map<string, int> > file;
-map<string, int> totalfile;
+map<string, int> totalfile;f
 
 map<string,int> dfs(string now) {
 
