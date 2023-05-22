@@ -3,12 +3,10 @@
 using namespace std;
 
 const int MN = 10001;
-const int INF = 1e9;
 int dp[MN][4];
 
 int main() {
     int T; cin >> T;
-    memset(dp, INF, sizeof(dp));
     dp[1][1] = dp[2][1] = dp[2][2] = dp[3][1] = dp[3][2] = dp[3][3] = 1;
 
     for(int i = 4; i < MN; i++) {
