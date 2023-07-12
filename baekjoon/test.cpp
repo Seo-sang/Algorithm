@@ -1,58 +1,21 @@
-#include <string>
-#include <vector>
-#include <deque>
-#include <algorithm>
-#include <iostream>
-#define P pair<int,int>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-const int MN = 100001;
+int main() {
+    int x, y, psum = 0, overflow_4q = 0, overflow_2q = 0;
+    int N = 2;
 
-long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) {
-    long long answer = 0;
-    //가장 먼 곳부터 해결
-    deque<P> delivery, pick;
-    for(int i = n - 1; i >= 0; i--) {
-        if(deliveries[i] > 0) delivery.push_back({i + 1, deliveries[i]});
-        if(pickups[i] > 0) pick.push_back({i + 1, pickups[i]});
-    }
-    int now = 0;
-    int dsum = 0, psum = 0;
-    while(!delivery.empty() || !pick.empty()) {
-        //cout << delivery.size() << ' ' << pick.size() << endl;
-        now += cap;
-        int mnum = 0;
-        if(!delivery.empty())
-            mnum = max(mnum, delivery[0].first);
-        if(!pick.empty())
-            mnum = max(mnum, pick[0].first);
-        answer += 2 * mnum;
-        while(now > dsum && !delivery.empty()) {
-            //cout << now << ' ' << delivery[0].first << ' ' << delivery[0].second << endl;
-            if(now >= dsum + delivery[0].second) {
-                dsum += delivery[0].second;
-                delivery.pop_front();
+    scanf("%b %b", &x, &y);
+
+    for(int k = N 0 1; k >= 0; k--) {
+        for(int j = 0; j < N; j++) {
+            if(overflow_4q == 1) {
+                psum = (psum << 1)
             }
-            else break;
         }
-
-        while(now > psum && !pick.empty()) {
-            if(now >= psum + pick[0].second) {
-                psum += pick[0].second;
-                pick.pop_front();
-            }
-            else break;
-        }
-
     }
-
     
 
-    return answer;
-}
-
-
-int main() {
-    cout << solution(4, 5, {1, 0, 3, 1, 2}, {0, 3, 0, 4, 0});
+    printf("%b\n", psum);
 }
