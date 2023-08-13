@@ -2,20 +2,12 @@
 
 using namespace std;
 
+const int MN = 3;
+vector<string> arr = {"a", "bb", "aaac"};
+
+
 int main() {
-    int x, y, psum = 0, overflow_4q = 0, overflow_2q = 0;
-    int N = 2;
-
-    scanf("%b %b", &x, &y);
-
-    for(int k = N 0 1; k >= 0; k--) {
-        for(int j = 0; j < N; j++) {
-            if(overflow_4q == 1) {
-                psum = (psum << 1)
-            }
-        }
+    for(string str : arr) {
+        
     }
-    
-
-    printf("%b\n", psum);
 }
