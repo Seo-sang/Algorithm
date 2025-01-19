@@ -4,6 +4,7 @@
 #include <set>
 #include <iostream>
 
+
 const int MW = 200;
 const int MH = 200;
 
@@ -24,7 +25,8 @@ int dy[8] = {0, 0, 1, -1, 1, -1, -1, 1};
 int changedx[4] = {1, 0, 0, -1};
 int changedy[4] = {0, 1, -1, 0};
 
-std::set<std::pair<int,int>> startPoint, removed;
+std::set<std::pair<int,int> > removed[3];
+std::set<int> startPoint;
 
 void init(int W, int H)
 {
@@ -36,9 +38,11 @@ void init(int W, int H)
     memset(score, 0, sizeof(score));
     memset(topPos, -1, sizeof(topPos));
     startPoint.clear();
-    removed.clear();
+    for(int i = 0; i < 3; i++) {
+        removed[i].clear();
+    }
 }
-
+/*
 void print_topPos() {
     std::cout << "-----------print topPos---------\n";
     for(int i = 0; i < width; i++) {
@@ -70,8 +74,8 @@ void print() {
     std::cout << "-------------------------\n";
 }
 
-void chk_print() {
-    std::cout << "-------chk_print---------\n";
+void print_chk() {
+    std::cout << "-------print_chk---------\n";
     for(int i = height - 1; i >= 0; i--) {
         for(int j = 0; j < width; j++) {
             std::cout << chk[i][j];
@@ -81,20 +85,20 @@ void chk_print() {
 
     std::cout << "-------------------------\n";
 }
+*/
 
-int bingo(int mPlayer, int x, int y) {
+void bingo(int mPlayer, int x, int y) {
 
-    //print_topPos();
     // std::cout << "start : " << x << ' ' << y << std::endl;
-    
+    if(topPos[y] < x) return;
     int ret = 0;
-    std::set<std::pair<int,int>> checked;
+    std::set<std::pair<int,int> > checked;
     
     for(int d = 0; d < 8; d += 2) {
         // std::cout << "dxdy : " << dx[d] << ' ' << dy[d] << std::endl;
         checked.clear();
         checked.insert(std::make_pair(x, y));
-        std::queue<std::pair<int,int>> q;
+        std::queue<std::pair<int,int> > q;
         q.push(std::make_pair(x, y));
         memset(vst, 0, sizeof(vst));
 
@@ -119,7 +123,7 @@ int bingo(int mPlayer, int x, int y) {
 
         if(checked.size() >= 5) {
             for(auto it = checked.begin(); it != checked.end(); it++) {
-                removed.insert(std::make_pair(it->first,it->second));
+                removed[mPlayer].insert(std::make_pair(it->first,it->second));
                 chk[it->first][it->second] = true;
             }
         }
@@ -127,8 +131,6 @@ int bingo(int mPlayer, int x, int y) {
 
     // std::cout << "size : " << removed.size() << std::endl;
 
-    ret = removed.size();
-    return ret;
 }
 
 void gravity() {
@@ -143,12 +145,14 @@ void gravity() {
             }
         }
         topPos[j] -= removed_cnt;
+        if(removed_cnt > 0) {
+            startPoint.insert(j);
+        }
     }
 }
 
 int dropBlocks(int mPlayer, int mCol)
 {  
-    std::cout << "dropBlocks\n";
     int ret = 0;
     startPoint.clear();
     memset(chk, 0, sizeof(chk));
@@ -157,53 +161,51 @@ int dropBlocks(int mPlayer, int mCol)
         topPos[col]++;
         board[topPos[col]][col] = mPlayer;
     }
-
-    startPoint.insert(std::make_pair(topPos[mCol], mCol));
-    startPoint.insert(std::make_pair(topPos[mCol + 1], mCol + 1));
-    startPoint.insert(std::make_pair(topPos[mCol + 2], mCol + 2));
+    startPoint.insert(mCol);
+    startPoint.insert(mCol + 1);
+    startPoint.insert(mCol + 2);
 
     // print_topPos();
     // print();
-    int turn;
     while(true) {
-        removed.clear();
+        removed[1].clear();
+        removed[2].clear();
         memset(chk, 0, sizeof(chk));
-        turn = board[startPoint.begin()->first][startPoint.begin()->second];
         for(auto it = startPoint.begin(); it != startPoint.end(); it++) {
-            bingo(board[it->first][it->second], it->first, it->second);
+            for(int row = 0; row <= topPos[*it]; row++) {
+                bingo(board[row][*it], row, *it);
+            }
         }
-        // chk_print();
+        // print_chk();
         
-        // std::cout <<"removed.size(): " << removed.size() << std::endl;
+        // std::cout <<"removed.size(): " << removed[mPlayer].size() << std::endl;
         gravity();
-        //print();
-        if(removed.size() == 0) break;
-        if(turn == mPlayer) {
-            ret += removed.size();
-        }
-        startPoint = removed;
+        // print_topPos();
+        // print();
+        if(removed[1].size() == 0 && removed[2].size() == 0) break;
+        ret += removed[mPlayer].size();
     }
     score[mPlayer-1] += ret;
     // print_topPos();
-    print();
+    // print();
 
 	return ret;
 }
 
 int changeBlocks(int mPlayer, int mCol)
 {   
-
-    std::cout << "changeBlocks\n";
+    if(topPos[mCol] < 0 || board[0][mCol] == 0 || board[0][mCol] == mPlayer) return 0;
     int ret = 0;
     startPoint.clear();
     memset(chk, 0, sizeof(chk));
 
-    std::queue<std::pair<int,int>> q;
+    std::queue<std::pair<int,int> > q;
     q.push(std::make_pair(0, mCol));
     board[0][mCol] = mPlayer;
 
     while(!q.empty()) {
         std::pair<int,int> now = q.front(); q.pop();
+        startPoint.insert(now.second);
         for(int d = 0; d < 4; d++) {
             int nx = now.first + changedx[d];
             int ny = now.second + changedy[d];
@@ -211,32 +213,32 @@ int changeBlocks(int mPlayer, int mCol)
                 if(board[nx][ny] != mPlayer) {
                     q.push(std::make_pair(nx, ny));
                     board[nx][ny] = mPlayer;
-                    startPoint.insert(std::make_pair(nx, ny));
                 }
             }
 
         }
     }
     // print();
-    int turn;
     while(true) {
-        removed.clear();
+        removed[1].clear();
+        removed[2].clear();
         memset(chk, 0, sizeof(chk));
-        turn = board[startPoint.begin()->first][startPoint.begin()->second];
         for(auto it = startPoint.begin(); it != startPoint.end(); it++) {
-            bingo(board[it->first][it->second], it->first, it->second);
+            for(int row = 0; row <= topPos[*it]; row++) {
+                bingo(board[row][*it], row, *it);
+            }
         }
-        // std::cout <<"removed.size(): " << removed.size() << std::endl;
+        // print_chk();
+        
+        // std::cout <<"removed.size(): " << removed[mPlayer].size() << std::endl;
         gravity();
-        if(removed.size() == 0) break;
-        if(turn == mPlayer) {
-            ret += removed.size();
-        }
-        startPoint = removed;
+        // print_topPos();
+        // print();
+        if(removed[1].size() == 0 && removed[2].size() == 0) break;
+        ret += removed[mPlayer].size();
     }
-
     // print_topPos();
-    print();
+    // print();
 
     score[mPlayer-1] += ret;
 	return ret;
@@ -253,7 +255,7 @@ int getResult(int mBlockCnt[2])
             else if(board[i][j] == 2) mBlockCnt[1]++;
         }
     }
-
+    
     // std::cout << "final remain blocks: " << mBlockCnt[0] << ' ' << mBlockCnt[1] << std::endl;
     // std::cout << "final score: " << score[0] << ' ' << score[1] << std::endl;
     if(score[0] > score[1]) return 1;
